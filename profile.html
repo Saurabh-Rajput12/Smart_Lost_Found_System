@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile — Smart Lost & Found</title>
+  <link rel="stylesheet" href="../assets/css/dashboard.css"/>
+  <link rel="stylesheet" href="../assets/css/profile.css"/>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="logo-icon">🔍</span>
+    <span class="logo-text">Lost &amp; Found</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="user-dashboard.html" class="nav-item">
+      <span class="nav-icon">🏠</span> My Dashboard
+    </a>
+    <a href="#" class="nav-item active">
+      <span class="nav-icon">👤</span> My Profile
+    </a>
+    <a href="user-dashboard.html#report" class="nav-item">
+      <span class="nav-icon">📝</span> Report Item
+    </a>
+    <a href="user-dashboard.html#search" class="nav-item">
+      <span class="nav-icon">🔍</span> Search Items
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/LostAndFoundSystem/logout" class="nav-item logout-btn">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-left">
+      <h1 class="page-title">My Profile</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <span class="user-avatar">👤</span>
+        <span id="topbarName">—</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="content-section">
+
+    <div id="profileAlert" class="alert" style="display:none"></div>
+
+    <div class="profile-grid">
+
+      <!-- Avatar Card -->
+      <div class="card profile-avatar-card">
+        <div class="avatar-circle" id="avatarInitials">?</div>
+        <h3 id="profileName">Loading...</h3>
+        <p id="profileEmail" class="profile-email">—</p>
+        <span id="profileRole" class="role-badge">—</span>
+        <p class="joined-text">Member since <span id="profileJoined">—</span></p>
+      </div>
+
+      <!-- Edit Form Card -->
+      <div class="card profile-form-card">
+
+        <div class="card-header">
+          <h3>✏️ Edit Profile</h3>
+        </div>
+
+        <form id="profileForm" style="padding: 1.2rem">
+
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text"
+                   id="editName"
+                   name="name"
+                   class="form-control"
+                   placeholder="Your full name"
+                   required/>
+          </div>
+
+          <div class="form-group" style="margin-top:1rem">
+            <label>Email Address</label>
+            <input type="email"
+                   id="editEmail"
+                   class="form-control"
+                   disabled
+                   style="background:#f3f4f6;color:#9ca3af"
+                   title="Email cannot be changed"/>
+            <small style="color:#9ca3af">Email address cannot be changed.</small>
+          </div>
+
+          <div class="form-group" style="margin-top:1rem">
+            <label>Phone Number</label>
+            <input type="tel"
+                   id="editPhone"
+                   name="phone"
+                   class="form-control"
+                   placeholder="Your phone number"/>
+          </div>
+
+          <hr style="margin:1.5rem 0;border:none;border-top:1px solid #f3f4f6"/>
+
+          <h4 style="font-size:0.95rem;color:#374151;margin-bottom:1rem">
+            🔒 Change Password <span style="font-weight:400;color:#9ca3af;font-size:0.8rem">(leave blank to keep current)</span>
+          </h4>
+
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password"
+                   id="oldPassword"
+                   name="oldPassword"
+                   class="form-control"
+                   placeholder="Enter current password"/>
+          </div>
+
+          <div class="form-group" style="margin-top:1rem">
+            <label>New Password</label>
+            <input type="password"
+                   id="newPassword"
+                   name="newPassword"
+                   class="form-control"
+                   placeholder="Minimum 6 characters"/>
+          </div>
+
+          <div class="form-group" style="margin-top:1rem">
+            <label>Confirm New Password</label>
+            <input type="password"
+                   id="confirmPassword"
+                   class="form-control"
+                   placeholder="Re-enter new password"/>
+          </div>
+
+          <div class="form-actions" style="margin-top:1.5rem">
+            <button type="submit" class="btn-primary">
+              💾 Save Changes
+            </button>
+            <button type="button"
+                    class="btn-outline"
+                    onclick="loadProfile()">
+              ↺ Reset
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+
+  </section>
+</main>
+
+<!-- Session Timeout Warning Modal -->
+<div id="sessionModal" class="modal-overlay hidden">
+  <div class="modal-box" style="text-align:center">
+    <div style="font-size:3rem;margin-bottom:1rem">⏳</div>
+    <h3>Session Expiring Soon</h3>
+    <p>You will be logged out in <strong><span id="countdown">60</span> seconds</strong> due to inactivity.</p>
+    <div class="modal-actions" style="justify-content:center;margin-top:1.5rem">
+      <button class="btn-primary" onclick="extendSession()">
+        Stay Logged In
+      </button>
+      <a href="../logout" class="btn-outline">Logout Now</a>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/profile.js"></script>
+</body>
+</html>

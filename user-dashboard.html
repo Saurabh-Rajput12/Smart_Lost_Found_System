@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Dashboard — Smart Lost & Found</title>
+  <link rel="stylesheet" href="../assets/css/dashboard.css"/>
+</head>
+<body>
+
+<!-- ── Sidebar ──────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <span class="logo-icon">🔍</span>
+    <span class="logo-text">Lost &amp; Found</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-section="dashboard">
+      <span class="nav-icon">🏠</span> My Dashboard
+    </a>
+    <a href="#" class="nav-item" data-section="report">
+      <span class="nav-icon">📝</span> Report Item
+    </a>
+    <a href="#" class="nav-item" data-section="search">
+      <span class="nav-icon">🔍</span> Search Items
+    </a>
+    <a href="#" class="nav-item" data-section="myclaims">
+      <span class="nav-icon">📬</span> My Claims
+    </a>
+    <a href="#" class="nav-item" data-section="matches">
+      <span class="nav-icon">✨</span> Smart Matches
+      <span class="badge" id="matchBadge">0</span>
+    </a>
+    <a href="#" class="nav-item" data-section="notifications">
+      <span class="nav-icon">🔔</span> Notifications
+      <span class="badge" id="notifBadge">0</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+   <a href="/LostAndFoundSystem/logout" class="nav-item logout-btn">
+      <span class="nav-icon">🚪</span> Logout
+    </a>
+  </div>
+</aside>
+
+<!-- ── Main Content ──────────────────────────────────────── -->
+<main class="main-content">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-left">
+      <h1 class="page-title" id="pageTitle">My Dashboard</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-bell"
+           onclick="toggleSection('notifications')">
+        🔔 <span class="notif-count" id="notifCount">0</span>
+      </div>
+      <div class="user-chip">
+        <span class="user-avatar">👤</span>
+        <span id="userName">User</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading Spinner -->
+  <div id="loadingSpinner" class="spinner-wrap">
+    <div class="spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <!-- ── SECTION: My Dashboard ─────────────────────────── -->
+  <section id="section-dashboard" class="content-section">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div>
+        <h2 id="welcomeMsg">Welcome back! 👋</h2>
+        <p>Here's a summary of your activity.</p>
+      </div>
+      <button class="btn-primary"
+              onclick="toggleSection('report')">
+        + Report Item
+      </button>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon">📋</div>
+        <div class="stat-info">
+          <span class="stat-value" id="myLostCount">0</span>
+          <span class="stat-label">My Lost Reports</span>
+        </div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-info">
+          <span class="stat-value" id="myFoundCount">0</span>
+          <span class="stat-label">My Found Reports</span>
+        </div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-icon">📬</div>
+        <div class="stat-info">
+          <span class="stat-value" id="pendingClaimsCount">0</span>
+          <span class="stat-label">Pending Claims</span>
+        </div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon">✨</div>
+        <div class="stat-info">
+          <span class="stat-value" id="matchCount">0</span>
+          <span class="stat-label">Smart Matches</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Recent Items -->
+    <div class="card mt-2">
+      <div class="card-header">
+        <h3>📦 My Recent Reports</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ref Code</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="myItemsBody">
+            <tr>
+              <td colspan="7" class="empty">
+                You haven't reported any items yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── SECTION: Report Item ───────────────────────────── -->
+  <section id="section-report" class="content-section hidden">
+    <div class="card">
+      <div class="card-header">
+        <h3>📝 Report a Lost or Found Item</h3>
+      </div>
+
+      <div id="reportAlert" class="alert" style="display:none"></div>
+
+     <form id="reportForm" action="/LostAndFoundSystem/item/report" method="POST" enctype="multipart/form-data">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Item Type *</label>
+            <select name="type" id="itemType" class="form-control" required>
+              <option value="">Select type</option>
+              <option value="LOST">I Lost an Item</option>
+              <option value="FOUND">I Found an Item</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select name="categoryId" id="categorySelect"
+                    class="form-control" required>
+              <option value="">Loading categories...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Item Title *</label>
+          <input type="text"
+                 name="title"
+                 class="form-control"
+                 placeholder="e.g. Black iPhone 14 with blue case"
+                 required maxlength="200"/>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Describe the item in detail — color, brand, distinguishing marks...">
+          </textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location *</label>
+            <input type="text"
+                   name="location"
+                   class="form-control"
+                   placeholder="e.g. Library Ground Floor"
+                   required/>
+          </div>
+          <div class="form-group">
+            <label>Date &amp; Time *</label>
+            <input type="datetime-local"
+                   name="dateOccurred"
+                   class="form-control"
+                   required/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Upload Image
+            <span class="optional">(optional)</span>
+          </label>
+          <input type="file"
+                 name="image"
+                 class="form-control"
+                 accept="image/*"
+                 onchange="previewImage(this)"/>
+          <img id="imagePreview"
+               src=""
+               alt="Preview"
+               class="img-preview hidden"/>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">
+            Submit Report
+          </button>
+          <button type="reset"
+                  class="btn-outline"
+                  onclick="clearPreview()">
+            Clear Form
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ── SECTION: Search Items ─────────────────────────── -->
+  <section id="section-search" class="content-section hidden">
+    <div class="card">
+      <div class="card-header">
+        <h3>🔍 Search Items</h3>
+      </div>
+
+      <!-- Search Filters -->
+      <div class="search-filters">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Keyword</label>
+            <input type="text"
+                   id="srchKeyword"
+                   class="form-control"
+                   placeholder="Search title or description..."/>
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="srchCategory" class="form-control">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="srchType" class="form-control">
+              <option value="">All Types</option>
+              <option value="LOST">Lost</option>
+              <option value="FOUND">Found</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text"
+                   id="srchLocation"
+                   class="form-control"
+                   placeholder="Filter by location..."/>
+          </div>
+          <div class="form-group">
+            <label>From Date</label>
+            <input type="date" id="srchFrom" class="form-control"/>
+          </div>
+          <div class="form-group">
+            <label>To Date</label>
+            <input type="date" id="srchTo" class="form-control"/>
+          </div>
+          <div class="form-group btn-group-inline">
+            <button class="btn-primary"
+                    onclick="searchItems()">
+              Search
+            </button>
+            <button class="btn-outline"
+                    onclick="clearSearch()">
+              Clear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Results -->
+      <div class="table-wrap mt-1">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ref Code</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="searchResults">
+            <tr>
+              <td colspan="8" class="empty">
+                Use filters above and click Search.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: My Claims ─────────────────────────────── -->
+  <section id="section-myclaims" class="content-section hidden">
+    <div class="card">
+      <div class="card-header">
+        <h3>📬 My Claims</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Claim ID</th>
+              <th>Item</th>
+              <th>Ref Code</th>
+              <th>Proof Submitted</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="myClaimsBody">
+            <tr>
+              <td colspan="6" class="empty">
+                You haven't submitted any claims yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: Smart Matches ─────────────────────────── -->
+  <section id="section-matches" class="content-section hidden">
+    <div class="card">
+      <div class="card-header">
+        <h3>✨ Smart Matches</h3>
+        <span class="helper-text">
+          Items that may match your reports
+        </span>
+      </div>
+      <div id="matchesList" class="matches-grid">
+        <p class="empty">No matches found yet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECTION: Notifications ────────────────────────── -->
+  <section id="section-notifications" class="content-section hidden">
+    <div class="card">
+      <div class="card-header">
+        <h3>🔔 Notifications</h3>
+        <button class="btn-sm" onclick="markAllRead()">
+          Mark All Read
+        </button>
+      </div>
+      <ul class="notif-list" id="notifList">
+        <li class="empty">No notifications yet.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Claim Submission Modal ──────────────────────────── -->
+<div id="claimModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3>Submit a Claim</h3>
+    <p>Describe why this item belongs to you.</p>
+    <input type="hidden" id="claimItemId"/>
+    <textarea id="claimProof"
+              class="form-control"
+              rows="4"
+              placeholder="e.g. It has my name written inside, serial number is XYZ123...">
+    </textarea>
+    <div class="modal-actions mt-1">
+      <button class="btn-primary"
+              onclick="submitClaim()">
+        Submit Claim
+      </button>
+      <button class="btn-outline" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/dashboard.js"></script>
+<script>
+  // Load user dashboard data on page open
+  loadUserDashboard();
+</script>
+
+</body>
+</html>
